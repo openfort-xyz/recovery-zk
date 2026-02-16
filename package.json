@@ -15,7 +15,7 @@
     "tsx": "^4.20.6",
     "@types/jsonwebtoken": "^9.0.7",
     "jsonwebtoken": "^9.0.2",
-    "vitest": "^1.0.0",
+    "vitest": "^4.0.18",
     "typescript": "^5.9.3"
   },
   "dependencies": {
