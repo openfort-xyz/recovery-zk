@@ -10,7 +10,6 @@ contract Simple7702Recovery is Simple7702Account, IRecovery, IKey {
     error Unauthorized();
 
     address public RECOVERY_MANAGER;
-    address public override owner = address(this);
     KeyData public keyData;
 
     mapping(address => bool) private _recoveryAuthorized;
@@ -20,7 +19,7 @@ contract Simple7702Recovery is Simple7702Account, IRecovery, IKey {
     constructor(IEntryPoint _entryPoint) Simple7702Account(_entryPoint) { }
 
     function setOwner(KeyDataReg memory _newOwner) external override {
-        if (msg.sender != owner && !_recoveryAuthorized[msg.sender]) revert Unauthorized();
+        if (msg.sender != address(this) && !_recoveryAuthorized[msg.sender]) revert Unauthorized();
         KeyData storage $ = keyData;
         $.keyType = _newOwner.keyType;
         $.isActive = true;
@@ -33,18 +32,22 @@ contract Simple7702Recovery is Simple7702Account, IRecovery, IKey {
     }
 
     function authorizeRecoveryManager(address account) external {
-        if (msg.sender != owner) revert Unauthorized();
+        if (msg.sender != address(this)) revert Unauthorized();
         _recoveryAuthorized[account] = true;
         emit RecoveryAuthorizationUpdated(account, true);
     }
 
     function revokeRecoveryManager(address account) external {
-        if (msg.sender != owner) revert Unauthorized();
+        if (msg.sender != address(this)) revert Unauthorized();
         delete _recoveryAuthorized[account];
         emit RecoveryAuthorizationUpdated(account, false);
     }
 
     function isRecoveryAuthorized(address account) external view override returns (bool) {
         return _recoveryAuthorized[account];
+    }
+
+    function owner() external view override returns (address) {
+        return address(this);
     }
 }

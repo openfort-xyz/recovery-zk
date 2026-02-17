@@ -1,7 +1,8 @@
 import { foundry } from "viem/chains";
+import { ABI_SIMPLE_7702 } from "@/data/abis";
 import { addressBook } from "../data/addressBook";
 import { anvilClient } from "../clients/anvilClient";
-import { Address, formatEther, type PublicClient, type GetBalanceReturnType, type WalletClient, type SignAuthorizationReturnType } from "viem";
+import { Address, formatEther, type PublicClient, type GetBalanceReturnType, type WalletClient, type SignAuthorizationReturnType, encodeFunctionData } from "viem";
 
 export async function __getCode(address: Address, publicClient: PublicClient): Promise<boolean> {
     const code = await publicClient.getCode({ address });
@@ -53,6 +54,24 @@ export async function sendEth(to: Address, amount: bigint, client: PublicClient)
     }
 }
 
+export async function authorizeRecoveryManager(wallet: WalletClient, account: Address) {
+        const data = encodeFunctionData({
+            abi: ABI_SIMPLE_7702,
+            functionName: 'authorizeRecoveryManager',
+            args: [account],
+        });
+    
+        const txHash = await wallet.sendTransaction({ 
+            account: wallet.account!, 
+            chain: foundry, 
+            to: wallet.account!.address, 
+            data 
+        });
+        await anvilClient.waitForTransactionReceipt({ hash: txHash });
+    
+        console.log(`RecoveryManager authorized for ${wallet.account!.address}`);
+}
+
 export async function balanceChecker(address: Address, publicClient: PublicClient): Promise<GetBalanceReturnType> {
     return await publicClient.getBalance({ address });
 }
@@ -61,6 +80,7 @@ const helpers = {
     __getCode,
     authorize,
     sendEth,
+    authorizeRecoveryManager,
     balanceChecker,
 }
 
