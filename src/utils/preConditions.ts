@@ -76,6 +76,19 @@ async function _deployRecoveryFactory(publicClient: PublicClient) {
     }
 }
 
+async function _deploySimple7702Recovery(publicClient: PublicClient) {
+    if (await __getCode(addressBook.SIMPLE7702_RECOVERY, publicClient)) {
+        return;
+    }
+    try {
+        const output = execSync("make deploy-simple7702-recovery", { encoding: "utf-8", cwd: process.cwd() });
+        console.log(output);
+    } catch (error: any) {
+        console.error("❌ Failed to deploy simple7702-recovery:", error.message);
+        throw error;
+    }
+}
+
 async function deployContracts(publicClient: PublicClient) {
     // Deploy contracts in order
     await _deployPasskeyVerifier(publicClient);
@@ -83,6 +96,7 @@ async function deployContracts(publicClient: PublicClient) {
     await _deployZkJwtVerifier(publicClient);
     await _deployRecoveryManager(publicClient);
     await _deployRecoveryFactory(publicClient);
+    await _deploySimple7702Recovery(publicClient);
 
     console.log("🎉 All contracts deployed successfully!");
 }

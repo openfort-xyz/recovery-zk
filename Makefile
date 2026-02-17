@@ -38,3 +38,10 @@ deploy-recovery-factory:
 		--rpc-url $(RPC_URL_ANVIL) \
 		-vv \
 		--broadcast
+
+deploy-simple7702-recovery:
+	forge script ./script/deploy/DeploySimple7702Recovery.s.sol \
+		--private-key $(PRIVATE_KEY_ANVIL) \
+		--rpc-url $(RPC_URL_ANVIL) \
+		-vv \
+		--broadcast
