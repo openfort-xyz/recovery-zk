@@ -1,9 +1,7 @@
 import "dotenv/config";
-import { foundry } from "viem/chains";
 import { execSync } from "child_process";
 import { addressBook } from "../data/addressBook";
-import { anvilClient } from "../clients/anvilClient";
-import { Address, formatEther, parseEther, type PublicClient } from "viem";
+import { Address, type PublicClient } from "viem";
 
 async function __getCode(address: Address, publicClient: PublicClient): Promise<boolean> {
     const code = await publicClient.getCode({ address });
@@ -99,23 +97,6 @@ async function deployContracts(publicClient: PublicClient) {
     await _deploySimple7702Recovery(publicClient);
 
     console.log("🎉 All contracts deployed successfully!");
-}
-
-export async function sendEth(to: Address, amount: bigint, client: PublicClient) {
-    try {
-        const txHash = await anvilClient.sendTransaction({ account: anvilClient.account!, chain: foundry, to, value: amount });
-        const receipt = await client.waitForTransactionReceipt({ hash: txHash });
-
-        if (receipt.status === "success") {
-            console.log(`Transferred ${formatEther(amount)} ETH to ${to} : TX Hash: ${txHash}`);
-            const balance = await client.getBalance({ address: to });
-            console.log(`New Balance of ${to}: ${formatEther(balance)} ETH`);
-        } else {
-            throw new Error(`Transaction failed: ${txHash}`);
-        }
-    } catch (error) {
-        console.error("Error sending ETH:", error);
-    }
 }
 
 export async function preConditions(publicClient: PublicClient) {

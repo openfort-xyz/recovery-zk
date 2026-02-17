@@ -7,7 +7,7 @@ dotenv.config();
 
 const DEFAULT_RPC_URL: string = process.env.RPC_URL_ANVIL! as string;
 
-export async function getPublicClient(rpcUrl: string = process.env.RPC_URL ?? DEFAULT_RPC_URL): Promise<PublicClient> {
+export async function getPublicClient(rpcUrl: string = DEFAULT_RPC_URL): Promise<PublicClient> {
     return createPublicClient({
         chain: foundry,
         transport: http(rpcUrl),
