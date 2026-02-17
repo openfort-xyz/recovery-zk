@@ -1,13 +1,8 @@
 import "dotenv/config";
+import { type PublicClient } from "viem";
 import { execSync } from "child_process";
+import { __getCode } from "../helpers/helpers";
 import { addressBook } from "../data/addressBook";
-import { Address, type PublicClient } from "viem";
-
-async function __getCode(address: Address, publicClient: PublicClient): Promise<boolean> {
-    const code = await publicClient.getCode({ address });
-    const hasCode = code !== undefined && code !== "0x" && code !== null;
-    return hasCode;
-}
 
 async function _deployPasskeyVerifier(publicClient: PublicClient) {
     if (await __getCode(addressBook.PASSKEY_VERIFIER, publicClient)) {
