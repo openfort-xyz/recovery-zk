@@ -137,6 +137,7 @@ contract RecoveryManager is IRecoveryManager, IKey {
         // Validate intent fields
         if (intent.wallet != wallet) revert InvalidIntent();
 
+        // KeyDataReg validations (keyType, validUntil, validAfter, limits, key, keyControl)
         if (uint8(intent.newOwner.keyType) > 1) revert InvalidIntent();
         if (intent.newOwner.validUntil != type(uint48).max) revert InvalidIntent();
         if (intent.newOwner.validAfter != 0) revert InvalidIntent();
