@@ -57,3 +57,14 @@ export interface RecoveryIntent {
     chainId: bigint;
     recoveryManager: Address;
 }
+
+export interface PasskeyProof {
+    authenticatorData: Hex;
+    clientDataJSON: string;
+    challengeLocation: bigint;
+    responseTypeLocation: bigint;
+    r: bigint;
+    s: bigint;
+    x: bigint;
+    y: bigint;
+}

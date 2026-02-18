@@ -1,8 +1,37 @@
 import "dotenv/config";
 import { type PublicClient } from "viem";
 import { execSync } from "child_process";
+import { anvilClient } from "../clients/anvilClient";
 import { __getCode } from "../helpers/helpers";
 import { addressBook } from "../data/addressBook";
+
+
+async function _deployP256Verifier(publicClient: PublicClient) {
+    if (await __getCode(addressBook.P256_VERIFIER_ADDRESS, publicClient)) {
+        return;
+    }
+    try {
+        execSync(
+            `forge build lib/p256-verifier/src/P256Verifier.sol --via-ir --optimize 2>&1`,
+            { encoding: "utf-8", cwd: process.cwd() }
+        );
+        const artifact = JSON.parse(
+            require("fs").readFileSync(
+                `${process.cwd()}/out/P256Verifier.sol/P256Verifier.json`,
+                "utf-8"
+            )
+        );
+        const bytecode = artifact.deployedBytecode.object;
+        await anvilClient.request({
+            method: "anvil_setCode" as any,
+            params: [addressBook.P256_VERIFIER_ADDRESS, bytecode] as any,
+        });
+        console.log(`P256Verifier deployed at ${addressBook.P256_VERIFIER_ADDRESS} via anvil_setCode`);
+    } catch (error: any) {
+        console.error("Failed to deploy P256Verifier:", error.message);
+        throw error;
+    }
+}
 
 async function _deployPasskeyVerifier(publicClient: PublicClient) {
     if (await __getCode(addressBook.PASSKEY_VERIFIER, publicClient)) {
@@ -84,6 +113,7 @@ async function _deploySimple7702Recovery(publicClient: PublicClient) {
 
 async function deployContracts(publicClient: PublicClient) {
     // Deploy contracts in order
+    await _deployP256Verifier(publicClient);
     await _deployPasskeyVerifier(publicClient);
     await _deployHonkVerifier(publicClient);
     await _deployZkJwtVerifier(publicClient);
