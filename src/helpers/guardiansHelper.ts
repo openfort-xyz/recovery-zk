@@ -1,8 +1,8 @@
 import { foundry } from "viem/chains";
 import { ABI_RECOVERY_MANAGER } from "@/data/abis";
 import { anvilClient } from "@/clients/anvilClient";
-import { Guardian, GuardianType, RecoveryIntent } from "../data/interfaces";
-import { Hex, keccak256, concat, pad, Address, type WalletClient, encodeFunctionData } from "viem";
+import { Guardian, GuardianType, RecoveryIntent, PasskeyProof } from "../data/interfaces";
+import { Hex, keccak256, concat, pad, Address, type WalletClient, encodeFunctionData, encodeAbiParameters } from "viem";
 
 export async function getGuardian(guardianType: GuardianType, identifier: Hex): Promise<Guardian> {
     return {
@@ -66,4 +66,29 @@ export async function executeRecovery(recoveryManagerAddress: Address) {
     await anvilClient.waitForTransactionReceipt({ hash: txHash });
 
     console.log(`Recovery executed at ${recoveryManagerAddress}`);
+}
+
+export function encodePasskeyProof(passkeyProof: PasskeyProof): Hex {
+    return encodeAbiParameters(
+        [
+            { type: "bytes" },
+            { type: "string" },
+            { type: "uint256" },
+            { type: "uint256" },
+            { type: "uint256" },
+            { type: "uint256" },
+            { type: "uint256" },
+            { type: "uint256" },
+        ],
+        [
+            passkeyProof.authenticatorData,
+            passkeyProof.clientDataJSON,
+            passkeyProof.challengeLocation,
+            passkeyProof.responseTypeLocation,
+            passkeyProof.r,
+            passkeyProof.s,
+            passkeyProof.x,
+            passkeyProof.y,
+        ]
+    );
 }
