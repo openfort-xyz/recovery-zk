@@ -46,6 +46,32 @@ async function _deployPasskeyVerifier(publicClient: PublicClient) {
     }
 }
 
+async function _deployZKTranscriptLib(publicClient: PublicClient) {
+    if (await __getCode(addressBook.ZK_TRANSCRIPT_LIB, publicClient)) {
+        return;
+    }
+    try {
+        const artifact = JSON.parse(
+            require("fs").readFileSync(
+                `${process.cwd()}/out/HonkVerifier.sol/ZKTranscriptLib.json`,
+                "utf-8"
+            )
+        );
+        // deployedBytecode starts with 0x73 + 20 zero bytes (library self-address placeholder)
+        // Replace the placeholder with the actual deployment address
+        const addr = addressBook.ZK_TRANSCRIPT_LIB.toLowerCase().replace("0x", "");
+        const bytecode = "0x73" + addr + artifact.deployedBytecode.object.substring(44);
+        await anvilClient.request({
+            method: "anvil_setCode" as any,
+            params: [addressBook.ZK_TRANSCRIPT_LIB, bytecode] as any,
+        });
+        console.log(`ZKTranscriptLib deployed at ${addressBook.ZK_TRANSCRIPT_LIB} via anvil_setCode`);
+    } catch (error: any) {
+        console.error("Failed to deploy ZKTranscriptLib:", error.message);
+        throw error;
+    }
+}
+
 async function _deployHonkVerifier(publicClient: PublicClient) {
     if (await __getCode(addressBook.HONK_VERIFIER, publicClient)) {
         return;
@@ -115,6 +141,7 @@ async function deployContracts(publicClient: PublicClient) {
     // Deploy contracts in order
     await _deployP256Verifier(publicClient);
     await _deployPasskeyVerifier(publicClient);
+    await _deployZKTranscriptLib(publicClient);
     await _deployHonkVerifier(publicClient);
     await _deployZkJwtVerifier(publicClient);
     await _deployRecoveryManager(publicClient);

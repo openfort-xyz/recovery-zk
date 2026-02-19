@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google JWT Extractor</title>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <style>
+      body {
+        font-family: monospace;
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+        background: #1a1a1a;
+        color: #e0e0e0;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      .setup {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+      }
+      .setup input {
+        flex: 1;
+        padding: 8px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        background: #2a2a2a;
+        border: 1px solid #444;
+        color: #e0e0e0;
+        border-radius: 4px;
+      }
+      .setup button {
+        padding: 8px 16px;
+        font-family: monospace;
+        cursor: pointer;
+        background: #4285f4;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+      #signin-btn {
+        margin-bottom: 24px;
+      }
+      pre {
+        background: #2a2a2a;
+        padding: 16px;
+        overflow-x: auto;
+        border-radius: 4px;
+        border: 1px solid #444;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .label {
+        color: #888;
+        margin-top: 16px;
+        margin-bottom: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Google JWT Extractor</h1>
+
+    <div class="setup">
+      <input id="client-id" type="text" placeholder="Paste your Google OAuth Client ID" />
+      <button id="init-btn">Initialize</button>
+    </div>
+
+    <div id="signin-btn"></div>
+    <div id="output"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

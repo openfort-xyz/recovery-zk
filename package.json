@@ -10,18 +10,22 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@msgpack/msgpack": "^3.1.3",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^24.10.1",
+    "create-debug": "^0.3.0",
+    "debug": "^4.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "source-map-support": "^0.5.21",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.6",
-    "@types/jsonwebtoken": "^9.0.7",
-    "jsonwebtoken": "^9.0.2",
-    "vitest": "^1.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^1.0.0"
   },
   "dependencies": {
-    "dotenv": "^17.2.3",
     "@aztec/bb.js": "0.82.2",
     "@noir-lang/noir_js": "1.0.0-beta.18",
+    "dotenv": "^17.2.3",
     "viem": "^2.44.4"
   }
 }

@@ -1,5 +1,4 @@
 [profile.default]
-evm_version = "prague"
 bytecode_hash = "none"
 cbor_metadata = false
 src = "contracts"

@@ -2,7 +2,8 @@ import { foundry } from "viem/chains";
 import { ABI_RECOVERY_MANAGER } from "@/data/abis";
 import { anvilClient } from "@/clients/anvilClient";
 import { Guardian, GuardianType, RecoveryIntent, PasskeyProof } from "../data/interfaces";
-import { Hex, keccak256, concat, pad, Address, type WalletClient, encodeFunctionData, encodeAbiParameters } from "viem";
+import { Hex, keccak256, concat, pad, toHex, Address, type WalletClient, encodeFunctionData, encodeAbiParameters } from "viem";
+import { initBarretenberg, computeCommitment } from "../zkjwt/poseidon";
 
 export async function getGuardian(guardianType: GuardianType, identifier: Hex): Promise<Guardian> {
     return {
@@ -18,6 +19,12 @@ export async function computePasskeyIdentifier(pubKeyX: Hex, pubKeyY: Hex): Prom
 
 export async function computeEoaIdentifier(address: Address): Promise<Hex> {
     return pad(address, { size: 32 });
+}
+
+export async function computeZkJwtIdentifier(email: string, salt: bigint): Promise<Hex> {
+    const bb = await initBarretenberg();
+    const commitment = computeCommitment(bb, email, salt);
+    return `0x${commitment.toString().replace("0x", "").padStart(64, "0")}` as Hex;
 }
 
 export async function identifierToAddress(identifier: Hex): Promise<Address> {
@@ -90,5 +97,16 @@ export function encodePasskeyProof(passkeyProof: PasskeyProof): Hex {
             passkeyProof.x,
             passkeyProof.y,
         ]
+    );
+}
+
+export function encodeZkJwtProof(rawProof: Uint8Array, pubkeyModulusLimbs: bigint[]): Hex {
+    const modulusLimbs = pubkeyModulusLimbs.map(
+        (limb) => pad(toHex(limb), { size: 32 })
+    ) as [Hex, ...Hex[]];
+
+    return encodeAbiParameters(
+        [{ type: "bytes" }, { type: "bytes32[18]" }],
+        [toHex(rawProof), modulusLimbs],
     );
 }
